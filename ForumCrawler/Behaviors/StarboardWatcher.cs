@@ -60,7 +60,7 @@ namespace ForumCrawler
 				return;
 			}
 
-			var gazers = (await userMessage.GetReactionUsersAsync(reaction.Emote, 1000).ToList().ConfigureAwait(false))
+			var gazers = (await userMessage.GetReactionUsersAsync(reaction.Emote, 1000).ToArrayAsync().ConfigureAwait(false))
 				.SelectMany(page => page)
 				.Where(u => u != null)
 				.ToList();
