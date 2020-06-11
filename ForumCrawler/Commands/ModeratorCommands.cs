@@ -466,7 +466,7 @@ namespace ForumCrawler.Commands
 
                 if (query.Count == 0)
                 {
-                    muted = default;
+                    muted = default(IRole);
                     return false;
                 }
 

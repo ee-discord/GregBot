@@ -24,7 +24,7 @@ namespace ForumCrawler
 
                 if (post == null)
                 {
-                    return default;
+                    return default(StarboardInformation);
                 }
 
                 return new StarboardInformation
@@ -151,7 +151,7 @@ namespace ForumCrawler
                 }
 
                 post.OnStarboard = false;
-                post.StarboardMessageId = default;
+                post.StarboardMessageId = default(long);
 
                 await ctx.SaveChangesAsync();
             }
