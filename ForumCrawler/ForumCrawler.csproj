@@ -374,9 +374,6 @@
     <Compile Include="Migrations\202005091205228_RemoveExemptAndShowScore.Designer.cs">
       <DependentUpon>202005091205228_RemoveExemptAndShowScore.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202005102158383_InertiaRevamp.cs" />
-    <Compile Include="Migrations\202005102158383_InertiaRevamp.Designer.cs">
-      <DependentUpon>202005102158383_InertiaRevamp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202005111946245_AddGemsRemoveEnergy.cs" />
     <Compile Include="Migrations\202005111946245_AddGemsRemoveEnergy.Designer.cs">
@@ -558,8 +555,6 @@
     <EmbeddedResource Include="Migrations\202005091205228_RemoveExemptAndShowScore.resx">
       <DependentUpon>202005091205228_RemoveExemptAndShowScore.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202005102158383_InertiaRevamp.resx">
-      <DependentUpon>202005102158383_InertiaRevamp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005111946245_AddGemsRemoveEnergy.resx">
       <DependentUpon>202005111946245_AddGemsRemoveEnergy.cs</DependentUpon>

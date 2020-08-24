@@ -116,7 +116,6 @@ namespace ForumCrawler
             await ReplyAsync($"[#{hs.Item2}] **{user.GetName()}**'s stats:", embed: new EmbedBuilder().WithDescription(
                 Emote.Parse(WootString) + $" **Score:** {score.Score:F3}{boostStr}\n" +
                 $":gem: **Gems:** {score.Gems}{dailyStr}\n" +
-                $":rocket: **Inertia:** {score.Inertia * 100:F0}%").Build());
         }
 
         [Command("transfer")]
@@ -256,7 +255,6 @@ namespace ForumCrawler
         public async Task ThresholdWarning(bool enabled)
         {
             await Score.SetHasDisabledThresholdWarning(Context.Client, Context.User.Id, !enabled);
-            await ReplyAsync($"Set threshold warnings to {enabled}. Threshold warnings warn you when your inertia drops below 10%.");
         }
 
         [Command("autodaily")]

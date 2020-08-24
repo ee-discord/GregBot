@@ -190,9 +190,6 @@ namespace ForumCrawler
                 {
                     if (user.DidJustFallUnderThreshold && !user.HasDisabledThresholdWarning)
                     {
-                        await client.GetUser(user.UserId).SendMessageAsync(":warning: Your inertia just fell below 10%. " +
-                             "Inertia is gained by being active on the server. " +
-                             "If your inertia falls to 0%, you will start losing score!\n" +
                              "You can disable this warning by calling `g!thresholdwarning false`");
                     }
 

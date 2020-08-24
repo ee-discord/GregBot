@@ -1979,7 +1979,6 @@ namespace ForumCrawler
             // Misc
             "Code?",
             "LMAO!",
-            "Sorry, I need to say something this minute too for inertia.",
         };
 
         private static readonly Dictionary<ulong, ChatChannel> Channels = new Dictionary<ulong, ChatChannel>();

@@ -15,24 +15,15 @@ namespace ForumCrawler
 
         private static readonly Random Random = new Random();
 
-        public const double InertiaWarningThreshold = 0.095;
 
         private const double ScorePointMultiplier = 0.0015;
-        private const double InertiaPointMultiplier = 0.01;
         private const double ScoreEpsilon = 0.5;
-        private const double InertiaEpsilon = 0.5;
         private const double MaxScore = 5;
-        private const double MaxInertia = 1;
 
         private const double ActivityResolutionInHours = 60.0 / 3600; // 60 seconds
 
-        private const double InertiaPointsCapacity = 109.861228867; // ln(1 - Max_Inertia / (Max_Inertia + InertiaEpsilon)) / -0.01
-        private const double InertiaPointsPerActivityHour = InertiaPointsCapacity / 12; // 12 hours of nonstop talking with no decay fills up inertia to 100%
-        private const double InertiaPointsPerActivity = InertiaPointsPerActivityHour * ActivityResolutionInHours;
 
         private const double Level5Decay = 32; // Math.Pow(2, 5)
-        private const double InertiaPerActivityHour = InertiaPointsPerActivityHour * InertiaPointMultiplier * (MaxInertia + InertiaEpsilon / 2); // Average the effect of the epsilon to account for the slowing slope
-        private const double InertiaDecayRatePerHour = 3 * InertiaPerActivityHour / 24 / Level5Decay; // 1.5h time investment / day required for a lvl 5 person to not decay
 
         private const double ScoreBaseDecayRate = 0.001;
         private const double ScoreInactivityDecayRate = 0.0001;
@@ -52,7 +43,6 @@ namespace ForumCrawler
         public DateTime? LastDecay { get; set; }
         public DateTime? LastDaily { get; set; }
         public int Gems { get; set; }
-        public double Inertia { get; set; }
 
         [Index]
         public double Score { get; set; } = 1;
@@ -83,10 +73,7 @@ namespace ForumCrawler
         }
 
         [NotMapped]
-        private double InertiaPoints
         {
-            get => ToPoints(Inertia, MaxInertia, InertiaEpsilon, InertiaPointMultiplier); // ln(1 - x / 1.1) / -0.01
-            set => Inertia = ToValue(value, MaxInertia, InertiaEpsilon, InertiaPointMultiplier); // 1.1 * (1 - e ^(-0.01x)))
         }
 
         private static double ToPoints(double value, double max, double epsilon, double multiplier) => Math.Log(1 - value / (max + epsilon)) / -multiplier;
@@ -192,14 +179,7 @@ namespace ForumCrawler
             var ticks = (DateTime.UtcNow - lastDecay).TotalHours;
             var lastActivityTicks = (DateTime.UtcNow - lastActivity).TotalHours;
 
-            var inertiaDecayRate = InertiaDecayRatePerHour * Math.Pow(2, this.Score);
-            var inertiaDecay = inertiaDecayRate * ticks;
-            var remainderTicks = Math.Max(0, inertiaDecay - this.Inertia) / inertiaDecayRate;
 
-            var oldInertia = this.Inertia;
-            this.Inertia -= inertiaDecay;
-            if (this.Inertia < 0) this.Inertia = 0;
-            if (this.Inertia < InertiaWarningThreshold && oldInertia > InertiaWarningThreshold)
             {
                 this.DidJustFallUnderThreshold = true;
             }
@@ -238,10 +218,6 @@ namespace ForumCrawler
         {
             if (this.TickActivity())
             {
-                var inertiaIncrease = InertiaPointsPerActivity *  Math.Pow(2, 5 - this.Score);
-                var oldInertiaPoints = this.InertiaPoints;
-                this.InertiaPoints += inertiaIncrease;
-                var remainder = (InertiaPoints - oldInertiaPoints) / inertiaIncrease;
                 if (remainder > 0)
                 {
                     this.ScorePoints += 1;
@@ -321,10 +297,8 @@ namespace ForumCrawler
             if (this.DailyCooldown.HasValue) 
                 throw new Exception($"You have already used your daily today. Come back in {this.DailyCooldown.Value.ToHumanReadableString()}.");
 
-            if (this.Inertia < InertiaWarningThreshold && this.Score < 2.9995 && DailyCount >= 3)
                 throw new Exception($"You've used your 3 trial g!daily commands. " +
                                     $"Daily gems are available to active members only. " +
-                                    $"You must collect at least 10% inertia or a base score of 3 or higher to run this command.");
             
             var amount = 3;
 
