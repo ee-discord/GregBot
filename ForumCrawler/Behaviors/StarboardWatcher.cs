@@ -129,8 +129,8 @@ namespace ForumCrawler
                 // for every user that has reacted that *isn't* a gazer, we will add them
                 foreach (var user in reactors)
                 {
-                    // if there's not a gazer in the DB with the user reacting
-                    if (!gazers.Any(gazer => gazer.StargazerId == (long)user.Id))
+                    // if there's not a gazer in the DB (and they aren't the original poster) with the user reacting
+                    if (!gazers.Any(gazer => gazer.StargazerId == (long)user.Id) && (ulong)gazer.StargazerId != message.Author.Id)
                     {
                         // add them
                         await OnReactionAddedImpl(ctx, message, user.Id, true);
