@@ -276,7 +276,7 @@ namespace ForumCrawler
                     "https://forums.everybodyedits.com/profile.php?id=" + post.PosterId)
                 .WithFooter($"In {GetForumShortName(post.Forum).DiscordEscape()}")
                 .WithTimestamp(DateTimeOffset.Parse(post.Time))
-                .WithUrl($"{DiscordSettings.UrlPrefix + post.PostId}")
+                .WithUrl($"{DiscordSettings.UrlPrefix + post.PostId}#p{post.PostId}")
                 .WithTitle($"#{post.Pnumber} in \"{post.Topic.DiscordEscape()}\"")
                 .WithDescription(content[0].Substring(0, Math.Min(content[0].Length, 2048)));
 
