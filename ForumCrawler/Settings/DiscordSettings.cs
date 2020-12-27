@@ -20,7 +20,7 @@ namespace ForumCrawler
 #else
         public const string CommandPrefix = "g!";
 #endif
-        public const string UrlPrefix = "https://greg.cf/";
+        public const string UrlPrefix = "https://forums.everybodyedits.com/viewtopic.php?pid=";
 
         public const ulong GuildId = 329335303963803649;
         public const ulong BotCommandsChannel = 329634826061742081;
