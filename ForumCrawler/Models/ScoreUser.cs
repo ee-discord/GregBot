@@ -17,6 +17,7 @@ namespace ForumCrawler
 
         public const double InertiaWarningThreshold = 0.095;
 
+        private const double PermanentScoreIncrease = 0.003;
         private const double ScorePointMultiplier = 0.0015;
         private const double InertiaPointMultiplier = 0.01;
         private const double ScoreEpsilon = 0.5;
@@ -56,6 +57,7 @@ namespace ForumCrawler
 
         [Index]
         public double Score { get; set; } = 1;
+        public double PermanentScore { get; set; } = 0;
 
         [NotMapped]
         public Dictionary<ulong, DateTime> Boosts { get; private set; } = new Dictionary<ulong, DateTime>();
@@ -119,6 +121,7 @@ namespace ForumCrawler
                 return new ScoreData
                 {
                     Score = Score,
+                    PermanentScore = PermanentScore,
                     Gems = Gems,
                     BoostLevel = GetBoostLevel(),
                     BonusScore = BonusScore,
@@ -137,12 +140,9 @@ namespace ForumCrawler
         private int GetBoostLevel()
         {
             var boosts = GetBoostsLeft().Count;
-            return boosts >= 6
-                ? 3
-                : boosts >= 3
-                ? 2
-                : boosts >= 1
-                ? 1
+            return boosts >= 6 ? 3
+                : boosts >= 3 ? 2
+                : boosts >= 1 ? 1
                 : 0;
         }
 
@@ -346,6 +346,7 @@ namespace ForumCrawler
             this.DailyCount++;
             this.LastDaily = DateTime.UtcNow.Date;
             this.Gems += amount + bonus;
+            this.PermanentScore += PermanentScoreIncrease;
 
             return (amount, bonus);
         }

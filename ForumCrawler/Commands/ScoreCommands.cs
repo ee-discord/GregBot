@@ -105,18 +105,38 @@ namespace ForumCrawler
         public async Task GetStats(IUser userObj)
         {
             var user = Context.Client.GetGuild(DiscordSettings.GuildId).GetUser(userObj.Id);
-            const string WootString = "<:woot:329697747701727235>";
-            var hs = await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, user.Id);
-            var score = hs.Item1;
+            var (score, position) = await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, user.Id);
+
+            var headerStr = $"{GetMedalStr(position)} **{user.GetName()}**'s stats:";
+
+            const string WootStr = "<:woot:329697747701727235>";
+            Emote WootEmote = Emote.Parse(WootStr);
             var boostStr = score.BonusScore > 0 ? $" (+{score.BonusScore:F1})" : "";
+
             var dailyStr = score.DailyCooldown.HasValue 
                 ? score.DailyStreakCount == 0 ? "" 
                 : $" (Streak: {score.DailyStreakCount})" 
                 : " (Daily available)";
-            await ReplyAsync($"[#{hs.Item2}] **{user.GetName()}**'s stats:", embed: new EmbedBuilder().WithDescription(
-                Emote.Parse(WootString) + $" **Score:** {score.Score:F3}{boostStr}\n" +
+
+            var permaScoreStr = score.PermanentScore > 0
+                ? $":medal: **Daily:** {score.DailyCount} (PermaBoost: +{score.PermanentScore})\n"
+                : "";
+
+            await ReplyAsync(headerStr, embed: new EmbedBuilder().WithDescription(
+                WootEmote + $" **Score:** {score.Score:F3}{boostStr}\n" +
+                permaScoreStr +
                 $":gem: **Gems:** {score.Gems}{dailyStr}\n" +
-                $":rocket: **Inertia:** {score.Inertia * 100:F0}%").Build());
+                $":rocket: **Inertia:** {score.Inertia * 100:F0}%"
+            ).Build());
+        }
+
+        private string GetMedalStr(int scorePosition) {
+            return scorePosition switch {
+                1 => ":first_place:",
+                2 => ":second_place:",
+                3 => ":third_place:",
+                _ => $"[#{scorePosition}]"
+            };
         }
 
         [Command("transfer")]
@@ -139,9 +159,12 @@ namespace ForumCrawler
         private string GetDailyStr(ScoreData scoreData, int amount, int bonus)
         {
             var bonusStr = bonus == 0 ? "" : $" (+3 streak bonus)";
-            var streakStr = scoreData.DailyStreakCount == 0 ? "" : $" Streak days: {scoreData.DailyStreakCount}";
+            var streakStr = scoreData.DailyStreakCount == 0 ? "" : $" Streak days: {scoreData.DailyStreakCount}\n";
+
             return $"{MentionUtils.MentionUser(Context.User.Id)} collected their {amount}{bonusStr} daily gems. " +
-                $"They now have {scoreData.Gems} in total.{streakStr}";
+                $"They now have {scoreData.Gems} in total.\n" +
+                streakStr +
+                $"Permanent score: {scoreData.PermanentScore} (+0.003)";
         }
 
         [Command("up")]

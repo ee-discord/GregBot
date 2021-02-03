@@ -6,17 +6,18 @@ namespace ForumCrawler
     public class ScoreData
     {
         public double Score { get; set; } = 1;
+        public double PermanentScore { get; set; } = 0;
         public double Gems { get; set; }
         public double BoostLevel { get; set; }
         public double BonusScore { get; set; }
         public ulong? AltOfUserId { get; set; }
         public int DailyStreakCount { get; set; }
-        public double ScoreAfterBoost => Score + BonusScore;
+        public double FinalScore => Score + BonusScore + PermanentScore;
         public int Class => (int)Math.Truncate(ScoreLevel);
 
         public string ClassString => ToRoman(Class);
 
-        public double ScoreLevel => Math.Truncate(Math.Round(ScoreAfterBoost * 1000) / 100) / 10;
+        public double ScoreLevel => Math.Truncate(Math.Round(FinalScore * 1000) / 100) / 10;
 
         public double BaseScoreLevel => Math.Truncate(Math.Round(Score * 1000) / 100) / 10;
 
