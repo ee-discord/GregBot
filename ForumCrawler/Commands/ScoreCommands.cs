@@ -131,12 +131,12 @@ namespace ForumCrawler
         }
 
         private string GetMedalStr(int scorePosition) {
-            return scorePosition switch {
-                1 => ":first_place:",
-                2 => ":second_place:",
-                3 => ":third_place:",
-                _ => $"[#{scorePosition}]"
-            };
+            switch(scorePosition) {
+                case 1: return ":first_place:";
+                case 2: return ":second_place:";
+                case 3: return ":third_place:";
+                default: return $"[#{scorePosition}]";
+            }
         }
 
         [Command("transfer")]
