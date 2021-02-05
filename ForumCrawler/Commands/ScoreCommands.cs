@@ -105,28 +105,28 @@ namespace ForumCrawler
         public async Task GetStats(IUser userObj)
         {
             var user = Context.Client.GetGuild(DiscordSettings.GuildId).GetUser(userObj.Id);
-            var (score, position) = await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, user.Id);
+            var (userScore, position) = await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, user.Id);
 
             var headerStr = $"{GetMedalStr(position)} **{user.GetName()}**'s stats:";
 
             const string WootStr = "<:woot:329697747701727235>";
             Emote WootEmote = Emote.Parse(WootStr);
-            var boostStr = score.BonusScore > 0 ? $" (+{score.BonusScore:F1})" : "";
+            var boostStr = userScore.BonusScore > 0 ? $" (+{userScore.BonusScore:F1})" : "";
 
-            var dailyStr = score.DailyCooldown.HasValue 
-                ? score.DailyStreakCount == 0 ? "" 
-                : $" (Streak: {score.DailyStreakCount})" 
+            var dailyStr = userScore.DailyCooldown.HasValue 
+                ? userScore.DailyStreakCount == 0 ? "" 
+                : $" (Streak: {userScore.DailyStreakCount})" 
                 : " (Daily available)";
 
-            var permaScoreStr = score.PermanentScore > 0
-                ? $":medal: **Daily:** {score.DailyCount} (PermaBoost: +{score.PermanentScore})\n"
+            var permaScoreStr = userScore.PermanentScore > 0
+                ? $":medal: **Daily:** {userScore.DailyCount} (PermaBoost: +{userScore.PermanentScore})\n"
                 : "";
 
             await ReplyAsync(headerStr, embed: new EmbedBuilder().WithDescription(
-                WootEmote + $" **Score:** {score.Score:F3}{boostStr}\n" +
+                WootEmote + $" **Score:** {userScore.Score:F3}{boostStr}\n" +
                 permaScoreStr +
-                $":gem: **Gems:** {score.Gems}{dailyStr}\n" +
-                $":rocket: **Inertia:** {score.Inertia * 100:F0}%"
+                $":gem: **Gems:** {userScore.Gems}{dailyStr}\n" +
+                $":rocket: **Inertia:** {userScore.Inertia * 100:F0}%"
             ).Build());
         }
 
@@ -240,12 +240,12 @@ namespace ForumCrawler
         public async Task Top(int page = 1)
         {
             var topPlayers = await Database.UNSAFE_GetScoreUsersByLeaderboardPositionAsync(page - 1);
-            var myPlayer =
-                await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, Context.User.Id);
+            var (userScore, position) = await Database.UNSAFE_GetOrCreateScoreUserAndLeaderboardPositionAsync(Context.Client, Context.User.Id);
+            
 
             var topPlayerStrings = topPlayers.Select(t =>
                 GetLeaderboardPlayerString(t, (10 * (page - 1)) + 1 + topPlayers.Count(t2 => t2.Score > t.Score)));
-            var myPlayerString = GetLeaderboardPlayerString(myPlayer.Item1, myPlayer.Item2);
+            var myPlayerString = GetLeaderboardPlayerString(userScore, position);
 
             await ReplyAsync("```py\n" +
                              "Pos  Username                          Score\n" +
