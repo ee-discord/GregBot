@@ -187,14 +187,10 @@ namespace ForumCrawler
                                  " (g!daily was automatically called. To disable this feature, invoke `g!autodaily false`)");
             }
 
+            var scoreMessage = $"{MentionUtils.MentionUser(Context.User.Id)} gave {MentionUtils.MentionUser(targetUser.Id)} a boost{(scoreData.BonusScore != oldScoreData.BonusScore) ? $" and they reached level {scoreData.BoostLevel}! +{scoreData.BonusScore:F1} temporary bonus score" : "") }. Their score increased by {scoreData.Score - oldScoreData.Score:F3} (Efficiency: {efficiency * 100:F0}%).";
             await ReplyAsync(
-                $"{MentionUtils.MentionUser(Context.User.Id)} gave {MentionUtils.MentionUser(targetUser.Id)} a boost. Their score increased by {scoreData.Score - oldScoreData.Score:F3} (Efficiency: {efficiency * 100:F0}%).");
+                scoreMessage);
 
-            if (scoreData.BonusScore != oldScoreData.BonusScore)
-            {
-                await ReplyAsync(
-                    $"{MentionUtils.MentionUser(targetUser.Id)} reached boost level {scoreData.BoostLevel}! +{scoreData.BonusScore:F1} temporary bonus score.");
-            }
         }
 
         #if DEBUG
